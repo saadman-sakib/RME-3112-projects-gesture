@@ -3,7 +3,7 @@ import mediapipe as mp
 import time
 import serial
 
-# ser = serial.Serial(port='COM3', baudrate=9600, timeout=.1)  # open serial port
+ser = serial.Serial(port='COM3', baudrate=115200)  # open serial port
 # grab opened serial port
 cap = cv2.VideoCapture(0)
 
@@ -24,17 +24,16 @@ while True:
     success, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
-    #print(results.multi_hand_landmarks)
     trig = 0
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
 
             if ( dist(handLms.landmark[8].x,handLms.landmark[8].y,handLms.landmark[4].x,handLms.landmark[4].y) < 0.1):
                 trig = 1
-                # ser.write(b'ON ')
+                ser.write('ON\r'.encode("utf-8"))
             else:
                 trig = 0
-            #     # ser.write(b'OFF')
+                ser.write('OFF\r'.encode("utf-8"))
                 
             for id, lm in enumerate(handLms.landmark):
                 #print(id,lm)
