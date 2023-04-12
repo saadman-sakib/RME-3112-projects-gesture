@@ -1,11 +1,12 @@
 import cv2
 import mediapipe as mp
 import time
-import serial
+import socketio
 
-ser = serial.Serial(port='COM3', baudrate=115200)  # open serial port
-# grab opened serial port
+sio = socketio.Client()
 cap = cv2.VideoCapture(0)
+
+sio.connect('https://rme-3112-project-server.onrender.com')
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(static_image_mode=False,
@@ -30,10 +31,10 @@ while True:
 
             if ( dist(handLms.landmark[8].x,handLms.landmark[8].y,handLms.landmark[4].x,handLms.landmark[4].y) < 0.1):
                 trig = 1
-                ser.write('ON\r'.encode("utf-8"))
+                sio.emit('signal', 'ON')
             else:
                 trig = 0
-                ser.write('OFF\r'.encode("utf-8"))
+                sio.emit('signal', 'OFF')
                 
             for id, lm in enumerate(handLms.landmark):
                 #print(id,lm)
